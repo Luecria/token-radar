@@ -7,18 +7,36 @@
 // trades are kept apart and shown with the market's own capitalisation, never
 // mixed into the ranking.
 //
-// Implied value follows only from the snapshot's own figures, through four named
-// factors. No protocol name is ever special-cased: one function scores every row.
+// Implied value is FITTED, not guessed. The protocols that record a token are
+// the calibration comps: their market caps are facts, and the model learns the
+// log-linear relation between market cap and TVL from them, at runtime, from
+// whatever snapshot it is handed. No protocol name is ever special-cased and no
+// fitted number is hardcoded: one function scores every row.
 //
-//   base           = tvl_usd x 0.30
-//   growthFactor   = 1 + 0.40 x clamp(change_7d, -50, 200) / 100
-//   tenureFactor   = 0.70 + 0.30 x min(age_days, 730) / 730
-//   breadthFactor  = 1 + 0.05 x min(chains, 10)
-//   implied        = max(1, round(base x growthFactor x tenureFactor x breadthFactor))
+//   comps          = protocols with mcap_usd > 0 and tvl_usd > 0
+//   log-ratios     = ln(mcap_usd / tvl_usd), winsorized at the 5th/95th percentiles
+//   fit            = least squares of ln(mcap) on ln(tvl) over the winsorized comps:
+//                    ln(mcap) = intercept + slope x ln(tvl)
+//   category adj.  = each category's median residual, shrunk toward 0 with
+//                    k = 5 pseudo-counts, so a lone comp cannot swing its category
+//   core           = exp(intercept + slope x ln(tvl_usd) + category adjustment)
+//   implied        = max(1, round(core x growthFactor x tenureFactor x breadthFactor))
 //
-// Age is the time from listed_at to the snapshot's as_of date; an unlisted age
-// uses 365 days. A protocol that records no token is described as recording no
-// token, never as having none: the record is not proof.
+// The three adjustments are bounded secondary multipliers, kept at half the
+// strength of the first version because the out-of-sample check showed the
+// fitted core carries the signal: growthFactor = 1 + 0.20 x clamp(change_7d,
+// -50, 200) / 100, tenureFactor = 0.85 + 0.15 x min(age_days, 730) / 730,
+// breadthFactor = 1 + 0.025 x min(chains, 10). Age is the time from listed_at
+// to the snapshot's as_of date; an unlisted age uses 365 days.
+//
+// The fit is validated out of sample before it is trusted: the dated comps are
+// split by listing date, the model is fitted on the earlier 70% and scored on
+// the later 30% (a deterministic slug-hash K-fold when the time split is
+// degenerate). The evidence — comp count, fitted slope and intercept, the
+// per-category adjustments, the winsor band, and the out-of-sample error —
+// travels with the dashboard's data, and the dashboard's Model view renders it.
+// A protocol that records no token is described as recording no token, never as
+// having none: the record is not proof.
 
 /** One protocol entry: exactly the ten fields the sealed snapshot carries. */
 export interface SnapshotProtocol {
@@ -43,9 +61,11 @@ export interface Snapshot {
   watchlist: string[];
 }
 
-/** The value model's constants, as the dashboard states them. */
+/** The value model's hyperparameters: the method's settings, never fitted numbers. */
 export interface ValueModel {
-  base_multiple: number;
+  shrink_k: number;
+  winsor_lo: number;
+  winsor_hi: number;
   growth_weight: number;
   growth_floor: number;
   growth_cap: number;
@@ -55,23 +75,33 @@ export interface ValueModel {
   unknown_age_days: number;
   breadth_per_chain: number;
   breadth_max_chains: number;
+  oos_train_share: number;
+  oos_min_side: number;
+  k_folds: number;
+  min_comps: number;
 }
 
 export const VALUE_MODEL: ValueModel = {
-  base_multiple: 0.3,
-  growth_weight: 0.4,
+  shrink_k: 5,
+  winsor_lo: 0.05,
+  winsor_hi: 0.95,
+  growth_weight: 0.2,
   growth_floor: -50,
   growth_cap: 200,
-  tenure_floor: 0.7,
-  tenure_range: 0.3,
+  tenure_floor: 0.85,
+  tenure_range: 0.15,
   tenure_days: 730,
   unknown_age_days: 365,
-  breadth_per_chain: 0.05,
+  breadth_per_chain: 0.025,
   breadth_max_chains: 10,
+  oos_train_share: 0.7,
+  oos_min_side: 10,
+  k_folds: 5,
+  min_comps: 5,
 };
 
 /** The model's version label, shown by the dashboard. */
-export const MODEL_VERSION = 'launch-1';
+export const MODEL_VERSION = 'launch-2';
 
 /** How many live-token protocols the Live view carries, by market capitalisation. */
 export const LIVE_ROWS = 24;
@@ -100,7 +130,11 @@ export interface BoardRow {
   age_days: number | null;
   implied_value_usd: number;
   model: {
-    base_multiple: number;
+    intercept: number;
+    slope: number;
+    category_adj: number;
+    category_n: number;
+    core_value_usd: number;
     growth_pct: number;
     growth_factor: number;
     tenure_factor: number;
@@ -122,6 +156,9 @@ export interface RadarRow {
   listed_at: string | null;
   age_days: number | null;
   implied_value_usd: number;
+  core_value_usd: number;
+  category_adj: number;
+  category_n: number;
   growth_factor: number;
   tenure_factor: number;
   breadth_factor: number;
@@ -140,6 +177,42 @@ export interface LiveRow {
   change_7d: number | null;
 }
 
+/** One category's fitted adjustment: its median residual, shrunk toward zero. */
+export interface CategoryFit {
+  category: string | null;
+  n: number;
+  adjustment: number;
+  median_ratio: number;
+}
+
+/** The out-of-sample validation: the fitted pipeline scored on comps it never saw. */
+export interface OosResult {
+  method: 'time-split' | 'k-fold' | 'none';
+  train_n: number;
+  test_n: number;
+  split_date: string | null;
+  med_abs_log_err: number | null;
+  within_2x: number | null;
+  core_med_abs_log_err: number | null;
+  core_within_2x: number | null;
+  baseline_med_abs_log_err: number | null;
+  baseline_within_2x: number | null;
+  reason: string | null;
+}
+
+/** The calibration evidence the dashboard's Model view renders. */
+export interface Evidence {
+  comp_count: number;
+  dated_count: number;
+  global_median_ratio: number;
+  winsor: { lo: number; hi: number };
+  fit: { intercept: number; slope: number };
+  categories: CategoryFit[];
+  oos: OosResult;
+  fallback: boolean;
+  fallback_reason: string | null;
+}
+
 /** Everything the dashboard renders. */
 export interface RadarData {
   as_of: string;
@@ -147,6 +220,7 @@ export interface RadarData {
   floor_usd: number;
   model: ValueModel;
   model_version: string;
+  evidence: Evidence;
   watchlist_size: number;
   board_size: number;
   early_size: number;
@@ -181,36 +255,289 @@ export function clampedGrowth(change7d: number | null, model: ValueModel): numbe
   return Math.min(model.growth_cap, Math.max(model.growth_floor, raw));
 }
 
-/** The growth factor: fast growers earn up to 1.8x, steep fallers keep 0.8x. */
+/** The growth factor: a bounded secondary multiplier, fast growers up to 1.4x, steep fallers 0.9x. */
 export function growthFactor(growthPct: number, model: ValueModel): number {
   return 1 + (growthPct / 100) * model.growth_weight;
 }
 
-/** The tenure factor: longer with no token earns up to 1.0x, the newest keep 0.7x. */
+/** The tenure factor: longer with no token earns up to 1.0x, the newest keep 0.85x. */
 export function tenureFactor(age: number | null, model: ValueModel): number {
   const days = age ?? model.unknown_age_days;
   const capped = Math.min(Math.max(days, 0), model.tenure_days);
   return model.tenure_floor + (capped / model.tenure_days) * model.tenure_range;
 }
 
-/** The breadth factor: each chain up to ten adds 5%, for distribution already built. */
+/** The breadth factor: each chain up to ten adds 2.5%, for distribution already built. */
 export function breadthFactor(chainCount: number, model: ValueModel): number {
   return 1 + Math.min(Math.max(chainCount, 0), model.breadth_max_chains) * model.breadth_per_chain;
 }
 
-/** The four factors and the implied value one protocol gets. */
-export function impliedValue(
+// ---------------------------------------------------------------- fitting
+
+/** A quantile of sorted numbers, linearly interpolated. */
+export function quantileOf(sorted: number[], f: number): number {
+  const i = (sorted.length - 1) * f;
+  const lo = Math.floor(i);
+  const hi = Math.ceil(i);
+  return sorted[lo]! + (sorted[hi]! - sorted[lo]!) * (i - lo);
+}
+
+/** The median of numbers, NaN when there are none. */
+export function medianOf(values: number[]): number {
+  if (values.length === 0) return NaN;
+  return quantileOf([...values].sort((a, b) => a - b), 0.5);
+}
+
+/** FNV-1a hash: the deterministic fold assignment for the K-fold fallback. */
+export function fnv1a(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/** A fitted model: the log-linear core, the winsor band, and the shrunk category adjustments. */
+export interface FittedModel {
+  intercept: number;
+  slope: number;
+  winsor_lo: number;
+  winsor_hi: number;
+  global_median_ratio: number;
+  categories: CategoryFit[];
+  comp_count: number;
+  dated_count: number;
+  fallback: boolean;
+  fallback_reason: string | null;
+}
+
+/** Whether a protocol is a calibration comp: a token whose market cap is a recorded fact. */
+export function isComp(p: SnapshotProtocol): boolean {
+  return typeof p.mcap_usd === 'number' && Number.isFinite(p.mcap_usd) && p.mcap_usd > 0 && Number.isFinite(p.tvl_usd) && p.tvl_usd > 0;
+}
+
+/** The category adjustment a protocol's category carries, 0 when its category has no comps. */
+export function categoryAdjustment(fitted: FittedModel, category: string | null): { adj: number; n: number } {
+  const found = fitted.categories.find((c) => c.category === category);
+  return found === undefined ? { adj: 0, n: 0 } : { adj: found.adjustment, n: found.n };
+}
+
+/**
+ * Fit the value model on a set of protocols: the comps among them carry the fit.
+ * Least squares of ln(mcap) on ln(tvl) over winsorized log-ratios, then each
+ * category's median residual shrunk toward zero. Pure and deterministic.
+ */
+export function fitModel(protocols: SnapshotProtocol[], model: ValueModel): FittedModel {
+  const comps = protocols.filter(isComp);
+  const datedCount = comps.filter((p) => p.listed_at !== null && Number.isFinite(Date.parse(`${p.listed_at}T00:00:00Z`))).length;
+  if (comps.length < model.min_comps) {
+    const ratios = comps.map((p) => p.mcap_usd! / p.tvl_usd);
+    const ratio = ratios.length > 0 ? Math.exp(medianOf(ratios.map((r) => Math.log(r)))) : 1;
+    return {
+      intercept: Math.log(ratio),
+      slope: 1,
+      winsor_lo: NaN,
+      winsor_hi: NaN,
+      global_median_ratio: ratio,
+      categories: [],
+      comp_count: comps.length,
+      dated_count: datedCount,
+      fallback: true,
+      fallback_reason: `only ${comps.length} usable comps: the fit falls back to a flat multiple of TVL, uncalibrated`,
+    };
+  }
+  const logRatios = comps.map((p) => Math.log(p.mcap_usd! / p.tvl_usd));
+  const sorted = [...logRatios].sort((a, b) => a - b);
+  const lo = quantileOf(sorted, model.winsor_lo);
+  const hi = quantileOf(sorted, model.winsor_hi);
+  const clamp = (x: number): number => Math.min(hi, Math.max(lo, x));
+  const xs = comps.map((p) => Math.log(p.tvl_usd));
+  const ys = comps.map((p, i) => Math.log(p.tvl_usd) + clamp(logRatios[i]!));
+  const meanX = xs.reduce((a, b) => a + b, 0) / xs.length;
+  const meanY = ys.reduce((a, b) => a + b, 0) / ys.length;
+  let sxy = 0;
+  let sxx = 0;
+  for (let i = 0; i < xs.length; i++) {
+    sxy += (xs[i]! - meanX) * (ys[i]! - meanY);
+    sxx += (xs[i]! - meanX) * (xs[i]! - meanX);
+  }
+  const slope = sxx === 0 ? 1 : sxy / sxx;
+  const intercept = meanY - slope * meanX;
+  const byCategory = new Map<string | null, number[]>();
+  const ratioByCategory = new Map<string | null, number[]>();
+  for (const p of comps) {
+    const residual = Math.log(p.mcap_usd!) - (intercept + slope * Math.log(p.tvl_usd));
+    const key = p.category;
+    if (!byCategory.has(key)) {
+      byCategory.set(key, []);
+      ratioByCategory.set(key, []);
+    }
+    byCategory.get(key)!.push(residual);
+    ratioByCategory.get(key)!.push(clamp(Math.log(p.mcap_usd! / p.tvl_usd)));
+  }
+  const categories: CategoryFit[] = [...byCategory.entries()]
+    .map(([category, residuals]) => ({
+      category,
+      n: residuals.length,
+      adjustment: (residuals.length * medianOf(residuals)) / (residuals.length + model.shrink_k),
+      median_ratio: Math.exp(medianOf(ratioByCategory.get(category)!)),
+    }))
+    .sort((a, b) => b.n - a.n || (a.category ?? '').localeCompare(b.category ?? ''));
+  return {
+    intercept,
+    slope,
+    winsor_lo: lo,
+    winsor_hi: hi,
+    global_median_ratio: Math.exp(medianOf(logRatios.map(clamp))),
+    categories,
+    comp_count: comps.length,
+    dated_count: datedCount,
+    fallback: false,
+    fallback_reason: null,
+  };
+}
+
+/** The fitted core value of a protocol: exp(intercept + slope x ln(TVL) + category adjustment). */
+export function fittedCore(fitted: FittedModel, protocol: SnapshotProtocol): { core: number; adj: number; n: number } {
+  const { adj, n } = categoryAdjustment(fitted, protocol.category);
+  const core = Math.exp(fitted.intercept + fitted.slope * Math.log(protocol.tvl_usd) + adj);
+  return { core, adj, n };
+}
+
+/** The full pipeline's prediction for one protocol, as the board scores it. */
+export function predictValue(
+  fitted: FittedModel,
   protocol: SnapshotProtocol,
   asOf: string,
   model: ValueModel,
-): { implied: number; growthPct: number; growth: number; tenure: number; breadth: number; age: number | null } {
+  withAdjustments: boolean,
+): number {
+  const { core } = fittedCore(fitted, protocol);
+  let value = core;
+  if (withAdjustments) {
+    const age = ageDays(asOf, protocol.listed_at);
+    value *= growthFactor(clampedGrowth(protocol.change_7d, model), model);
+    value *= tenureFactor(age, model);
+    value *= breadthFactor(protocol.chains.length, model);
+  }
+  if (!Number.isFinite(value)) return 1;
+  return Math.min(100_000_000_000_000, Math.max(1, Math.round(value)));
+}
+
+/** The fitted factors and the implied value one protocol gets. */
+export function impliedValue(
+  protocol: SnapshotProtocol,
+  asOf: string,
+  fitted: FittedModel,
+  model: ValueModel,
+): { implied: number; core: number; adj: number; n: number; growthPct: number; growth: number; tenure: number; breadth: number; age: number | null } {
   const age = ageDays(asOf, protocol.listed_at);
   const growthPct = clampedGrowth(protocol.change_7d, model);
   const growth = growthFactor(growthPct, model);
   const tenure = tenureFactor(age, model);
   const breadth = breadthFactor(protocol.chains.length, model);
-  const implied = Math.max(1, Math.round(protocol.tvl_usd * model.base_multiple * growth * tenure * breadth));
-  return { implied, growthPct, growth, tenure, breadth, age };
+  const { core, adj, n } = fittedCore(fitted, protocol);
+  const raw = core * growth * tenure * breadth;
+  const implied = !Number.isFinite(raw) ? 1 : Math.min(100_000_000_000_000, Math.max(1, Math.round(raw)));
+  return { implied, core, adj, n, growthPct, growth, tenure, breadth, age };
+}
+
+// ---------------------------------------------------------------- validation
+
+/** Median absolute log-error and share within 2x for predictions against recorded market caps. */
+function errorStats(errors: number[]): { med: number; within2x: number } {
+  return { med: medianOf(errors), within2x: errors.filter((e) => e <= Math.log(2)).length / errors.length };
+}
+
+/**
+ * Validate the fitted pipeline out of sample. Time-split first: fit on the
+ * earliest-listed 70% of dated comps, score the latest 30%. When the split is
+ * degenerate (too few dated comps, or every comp listed the same day), a
+ * deterministic slug-hash K-fold instead. The full pipeline, the fitted core
+ * alone, and a global-median baseline are all scored, so the report is honest
+ * about what the adjustments and the categories add.
+ */
+export function validateOutOfSample(snapshot: Snapshot, model: ValueModel): OosResult {
+  const comps = snapshot.protocols.filter(isComp);
+  if (comps.length < model.min_comps) {
+    return { method: 'none', train_n: 0, test_n: 0, split_date: null, med_abs_log_err: null, within_2x: null, core_med_abs_log_err: null, core_within_2x: null, baseline_med_abs_log_err: null, baseline_within_2x: null, reason: `only ${comps.length} usable comps: nothing to validate against` };
+  }
+  const dated = comps
+    .filter((p) => p.listed_at !== null && Number.isFinite(Date.parse(`${p.listed_at}T00:00:00Z`)))
+    .sort((a, b) => (a.listed_at! < b.listed_at! ? -1 : a.listed_at! > b.listed_at! ? 1 : a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
+  const distinctDates = new Set(dated.map((p) => p.listed_at)).size;
+  const trainCount = Math.floor(dated.length * model.oos_train_share);
+  if (dated.length >= 2 * model.oos_min_side && trainCount >= model.oos_min_side && dated.length - trainCount >= model.oos_min_side && distinctDates > 1) {
+    const train = dated.slice(0, trainCount);
+    const test = dated.slice(trainCount);
+    const fitted = fitModel(train, model);
+    const full: number[] = [];
+    const core: number[] = [];
+    const base: number[] = [];
+    for (const p of test) {
+      const actual = Math.log(p.mcap_usd!);
+      full.push(Math.abs(Math.log(predictValue(fitted, p, snapshot.as_of, model, true)) - actual));
+      core.push(Math.abs(Math.log(predictValue(fitted, p, snapshot.as_of, model, false)) - actual));
+      base.push(Math.abs(Math.log(Math.max(1, Math.round(p.tvl_usd * fitted.global_median_ratio))) - actual));
+    }
+    const f = errorStats(full);
+    const c = errorStats(core);
+    const b = errorStats(base);
+    return {
+      method: 'time-split',
+      train_n: train.length,
+      test_n: test.length,
+      split_date: train[train.length - 1]!.listed_at,
+      med_abs_log_err: round4(f.med),
+      within_2x: round4(f.within2x),
+      core_med_abs_log_err: round4(c.med),
+      core_within_2x: round4(c.within2x),
+      baseline_med_abs_log_err: round4(b.med),
+      baseline_within_2x: round4(b.within2x),
+      reason: null,
+    };
+  }
+  const folds: SnapshotProtocol[][] = Array.from({ length: model.k_folds }, () => []);
+  for (const p of comps) folds[fnv1a(p.slug) % model.k_folds]!.push(p);
+  const full: number[] = [];
+  const core: number[] = [];
+  const base: number[] = [];
+  let trainTotal = 0;
+  let testTotal = 0;
+  for (let k = 0; k < model.k_folds; k++) {
+    const test = folds[k]!;
+    const train = folds.flatMap((f, i) => (i === k ? [] : f));
+    if (test.length === 0 || train.length < model.min_comps) continue;
+    const fitted = fitModel(train, model);
+    trainTotal += train.length;
+    testTotal += test.length;
+    for (const p of test) {
+      const actual = Math.log(p.mcap_usd!);
+      full.push(Math.abs(Math.log(predictValue(fitted, p, snapshot.as_of, model, true)) - actual));
+      core.push(Math.abs(Math.log(predictValue(fitted, p, snapshot.as_of, model, false)) - actual));
+      base.push(Math.abs(Math.log(Math.max(1, Math.round(p.tvl_usd * fitted.global_median_ratio))) - actual));
+    }
+  }
+  if (testTotal === 0) {
+    return { method: 'none', train_n: 0, test_n: 0, split_date: null, med_abs_log_err: null, within_2x: null, core_med_abs_log_err: null, core_within_2x: null, baseline_med_abs_log_err: null, baseline_within_2x: null, reason: 'the K-fold fallback found no test fold: nothing to validate against' };
+  }
+  const f = errorStats(full);
+  const c = errorStats(core);
+  const b = errorStats(base);
+  return {
+    method: 'k-fold',
+    train_n: trainTotal,
+    test_n: testTotal,
+    split_date: null,
+    med_abs_log_err: round4(f.med),
+    within_2x: round4(f.within2x),
+    core_med_abs_log_err: round4(c.med),
+    core_within_2x: round4(c.within2x),
+    baseline_med_abs_log_err: round4(b.med),
+    baseline_within_2x: round4(b.within2x),
+    reason: `the time split was degenerate (${dated.length} dated comps, ${distinctDates} distinct listing dates), so a deterministic ${model.k_folds}-fold split by slug hash stands in`,
+  };
 }
 
 /** Whether the record shows no token at all: no market cap, no CoinGecko id, no symbol. */
@@ -238,7 +565,7 @@ export function passesWrappedScreen(p: SnapshotProtocol): boolean {
 }
 
 /** The protocols the board ranks, strongest first, with ranks 1..n. */
-export function buildBoard(snapshot: Snapshot, model: ValueModel = VALUE_MODEL): BoardRow[] {
+export function buildBoard(snapshot: Snapshot, fitted: FittedModel, model: ValueModel = VALUE_MODEL): BoardRow[] {
   const index = new Map(snapshot.protocols.map((p) => [p.slug, p]));
   const chosen = new Map<string, SnapshotProtocol>();
   for (const slug of snapshot.watchlist) {
@@ -250,7 +577,7 @@ export function buildBoard(snapshot: Snapshot, model: ValueModel = VALUE_MODEL):
     .sort((a, b) => b.tvl_usd - a.tvl_usd || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
   for (const p of early) chosen.set(p.slug, p);
 
-  const scored = [...chosen.values()].map((p) => ({ p, ...impliedValue(p, snapshot.as_of, model) }));
+  const scored = [...chosen.values()].map((p) => ({ p, ...impliedValue(p, snapshot.as_of, fitted, model) }));
   scored.sort((a, b) => b.implied - a.implied || (a.p.slug < b.p.slug ? -1 : a.p.slug > b.p.slug ? 1 : 0));
   return scored.map((s, i) => ({
     rank: i + 1,
@@ -268,7 +595,11 @@ export function buildBoard(snapshot: Snapshot, model: ValueModel = VALUE_MODEL):
     age_days: s.age,
     implied_value_usd: s.implied,
     model: {
-      base_multiple: model.base_multiple,
+      intercept: fitted.intercept,
+      slope: fitted.slope,
+      category_adj: s.adj,
+      category_n: s.n,
+      core_value_usd: Math.max(1, Math.round(s.core)),
       growth_pct: s.growthPct,
       growth_factor: round4(s.growth),
       tenure_factor: round4(s.tenure),
@@ -423,17 +754,31 @@ export function liveRows(snapshot: Snapshot): LiveRow[] {
     .map((p) => ({ slug: p.slug, name: p.name, category: p.category, chains: p.chains, tvl_usd: p.tvl_usd, mcap_usd: p.mcap_usd, change_7d: p.change_7d }));
 }
 
-/** Everything the dashboard renders, from the snapshot. */
-export function buildRadar(snapshot: Snapshot, model: ValueModel = VALUE_MODEL): { board: BoardRow[]; radar: RadarData } {
-  const board = buildBoard(snapshot, model);
+/** Everything the dashboard renders, from the snapshot: the fit first, then the board it scores. */
+export function buildRadar(snapshot: Snapshot, model: ValueModel = VALUE_MODEL): { board: BoardRow[]; radar: RadarData; fitted: FittedModel } {
+  const fitted = fitModel(snapshot.protocols, model);
+  const oos = validateOutOfSample(snapshot, model);
+  const board = buildBoard(snapshot, fitted, model);
   const live = liveRows(snapshot);
   const watchlist = new Set(snapshot.watchlist);
+  const evidence: Evidence = {
+    comp_count: fitted.comp_count,
+    dated_count: fitted.dated_count,
+    global_median_ratio: fitted.global_median_ratio,
+    winsor: { lo: fitted.winsor_lo, hi: fitted.winsor_hi },
+    fit: { intercept: fitted.intercept, slope: fitted.slope },
+    categories: fitted.categories,
+    oos,
+    fallback: fitted.fallback,
+    fallback_reason: fitted.fallback_reason,
+  };
   const radar: RadarData = {
     as_of: snapshot.as_of,
     source: snapshot.source,
     floor_usd: snapshot.floor_usd,
     model,
     model_version: MODEL_VERSION,
+    evidence,
     watchlist_size: snapshot.watchlist.length,
     board_size: board.length,
     early_size: board.filter((r) => !watchlist.has(r.slug)).length,
@@ -449,6 +794,9 @@ export function buildRadar(snapshot: Snapshot, model: ValueModel = VALUE_MODEL):
       listed_at: r.listed_at,
       age_days: r.age_days,
       implied_value_usd: r.implied_value_usd,
+      core_value_usd: r.model.core_value_usd,
+      category_adj: r.model.category_adj,
+      category_n: r.model.category_n,
       growth_factor: r.model.growth_factor,
       tenure_factor: r.model.tenure_factor,
       breadth_factor: r.model.breadth_factor,
@@ -457,7 +805,7 @@ export function buildRadar(snapshot: Snapshot, model: ValueModel = VALUE_MODEL):
     })),
     live,
   };
-  return { board, radar };
+  return { board, radar, fitted };
 }
 
 /** The snapshot out of a file's text, refused unless it is the shape the model scores. */
