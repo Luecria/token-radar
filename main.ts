@@ -1,9 +1,10 @@
 // Launch Radar's entrypoint (Node 22, standard library only, no network).
 //
-// Reads the sealed snapshot, scores every ranked protocol with the value model
-// in lib/model.ts, and writes the graded output: board.json, the dashboard's
-// data.js, copies of dashboard/ and screenshots/, and dossier.json, the summary
-// the judge reads, built with the vendored make.fun library.
+// Reads the sealed snapshot, fits the value model on the protocols that record
+// a token (lib/model.ts), scores every ranked protocol with the fitted model,
+// and writes the graded output: board.json, the dashboard's data.js, copies of
+// dashboard/ and screenshots/, and dossier.json, the summary the judge reads,
+// built with the vendored make.fun library.
 //
 // The program is deterministic: the same snapshot always writes the same bytes.
 // It runs twice on the grader and both runs must agree.
@@ -91,7 +92,7 @@ if (dashboardBytes > DOSSIER_TEXT_BYTES) {
 
 const shots = copyTree(join(REPO_ROOT, 'screenshots'), join(outDir, 'screenshots'));
 if (shots.length < 3) {
-  fail(`screenshots/ holds ${shots.length} image${shots.length === 1 ? '' : 's'}: hand in 3, the board, a detail view and a filtered view`);
+  fail(`screenshots/ holds ${shots.length} image${shots.length === 1 ? '' : 's'}: hand in 3 to 4, the board, a detail view, a filtered view and the model view`);
 }
 for (const name of shots) {
   if (!PLAIN_FILE_NAME.test(name)) fail(`screenshots/${name}: a name is letters, digits and . _ -, 1 to 128 characters`);
@@ -105,5 +106,6 @@ writeFileSync(
 
 process.stdout.write(
   `launch radar: ${snapshot.protocols.length} protocols, ${snapshot.watchlist.length} on the watchlist, ${board.length} rows ranked (${radar.early_size} early rows below the floor, ${radar.live_size} live-token protocols set aside)\n` +
+    `launch radar: fit on ${radar.evidence.comp_count} comps: ln(mcap) = ${radar.evidence.fit.intercept.toFixed(3)} + ${radar.evidence.fit.slope.toFixed(3)} x ln(TVL); out-of-sample (${radar.evidence.oos.method}, ${radar.evidence.oos.test_n} held out) median |log error| ${radar.evidence.oos.med_abs_log_err}, ${radar.evidence.oos.within_2x === null ? 'n/a' : `${(radar.evidence.oos.within_2x * 100).toFixed(1)}%`} within 2x\n` +
     `launch radar: wrote ${join(outDir, 'board.json')}, ${join(outDir, 'data.js')}, dashboard/ (${dashboardFiles.length} files, ${dashboardBytes} bytes), screenshots/ (${shots.length} images) and ${join(outDir, 'dossier.json')}\n`,
 );
