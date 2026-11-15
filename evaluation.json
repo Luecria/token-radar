@@ -1,0 +1,1326 @@
+{
+  "snapshot_sha256": "42a71213519479f3a180cc5010cbbf6bd18a2447fa0ad29e4c5122b6c9184393",
+  "reference_commit": "d88e92297affb609799799b2923b5e115f078b77",
+  "caveat": "Reused previously inspected holdout, not a fresh prospective test. Candidate selection uses training-only hash 5-fold mean absolute log error. Cross-sectional current caps split by listing date are not historical launch backtests; category/token-family dependencies can remain.",
+  "train_slugs": [
+    "superfluid",
+    "cbridge",
+    "rocket-pool",
+    "gains-network",
+    "stader",
+    "gearbox",
+    "tectonic",
+    "across",
+    "railgun",
+    "astar-dapps-staking",
+    "api3",
+    "metalx-lending",
+    "portal",
+    "concentrator",
+    "symbiosis",
+    "pinksale",
+    "team-finance",
+    "aura",
+    "dolomite",
+    "okx",
+    "swissborg",
+    "gate",
+    "ston.fi",
+    "exactly",
+    "veno-finance",
+    "flokifi-locker",
+    "blur-bids",
+    "inverse-finance-firm",
+    "nexo",
+    "liqwid",
+    "streamflow",
+    "mexc",
+    "equilibria",
+    "eigencloud",
+    "stusdt",
+    "gravity-bridge",
+    "fx-protocol",
+    "hydration-dex",
+    "ekubo",
+    "sdai",
+    "hipo",
+    "frankencoin",
+    "meth-protocol",
+    "renzo",
+    "brickken",
+    "veranta",
+    "merlins-seal",
+    "b2-buzz",
+    "merlinswap",
+    "evaa-protocol",
+    "morpheusai",
+    "taiko-bridge",
+    "harmonix-finance",
+    "usual-usd0",
+    "kinetic",
+    "waterneuron",
+    "pumpbtc",
+    "aquarius-stellar",
+    "biconomy.com",
+    "treehouse-protocol",
+    "babylon-protocol",
+    "kyros",
+    "reservoir-protocol",
+    "bitkub",
+    "resolv-usr",
+    "kaio"
+  ],
+  "test_slugs": [
+    "concrete",
+    "infrared-finance",
+    "looped-hype",
+    "resupply",
+    "anvil",
+    "uranium.io",
+    "solomon-usdv",
+    "zyfai",
+    "usd-ai",
+    "zerobase-cedefi",
+    "cap",
+    "mansory",
+    "xsy",
+    "yield-basis",
+    "falcon-finance",
+    "solstice",
+    "bitkan",
+    "rain",
+    "obol",
+    "re",
+    "flying-tulip-lend",
+    "chutes",
+    "hyperlane",
+    "bitway-earn",
+    "grove-finance",
+    "zama",
+    "huma",
+    "wise-token",
+    "fables"
+  ],
+  "split_date": "2025-01-29",
+  "candidates": [
+    {
+      "model": {
+        "shrink_k": 20,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.00995065288566,
+        "median_miss_multiple": 2.7454655308726,
+        "mean_abs_log_error": 1.3517788704502849,
+        "within_2x_count": 21,
+        "within_2x": 0.3181818181818182
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 10,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0577607657937622,
+        "median_miss_multiple": 2.879914959595772,
+        "mean_abs_log_error": 1.3551610079444607,
+        "within_2x_count": 22,
+        "within_2x": 0.3333333333333333
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 50,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.9982323908116224,
+        "median_miss_multiple": 2.713481212578768,
+        "mean_abs_log_error": 1.355201993535355,
+        "within_2x_count": 22,
+        "within_2x": 0.3333333333333333
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 50,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.9651376105094738,
+        "median_miss_multiple": 2.625148879694729,
+        "mean_abs_log_error": 1.3688756556681458,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 20,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.9894596618508273,
+        "median_miss_multiple": 2.6897806884982924,
+        "mean_abs_log_error": 1.3717472342991845,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 50,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.9631023370547477,
+        "median_miss_multiple": 2.619811417305405,
+        "mean_abs_log_error": 1.373331108494651,
+        "within_2x_count": 21,
+        "within_2x": 0.3181818181818182
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 50,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.9570984026474084,
+        "median_miss_multiple": 2.60412936550933,
+        "mean_abs_log_error": 1.3740735488520892,
+        "within_2x_count": 22,
+        "within_2x": 0.3333333333333333
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 5,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0839708783770785,
+        "median_miss_multiple": 2.9563957618513355,
+        "mean_abs_log_error": 1.3741666794706864,
+        "within_2x_count": 23,
+        "within_2x": 0.3484848484848485
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 20,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.9872273881596578,
+        "median_miss_multiple": 2.683783058498709,
+        "mean_abs_log_error": 1.376061533171166,
+        "within_2x_count": 22,
+        "within_2x": 0.3333333333333333
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 20,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 0.994921572377917,
+        "median_miss_multiple": 2.7045122244989916,
+        "mean_abs_log_error": 1.3763018141722343,
+        "within_2x_count": 22,
+        "within_2x": 0.3333333333333333
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 10,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0764326777921667,
+        "median_miss_multiple": 2.9341936447314385,
+        "mean_abs_log_error": 1.379161291140618,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 10,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0434224946015689,
+        "median_miss_multiple": 2.838916583202895,
+        "mean_abs_log_error": 1.3810436995592934,
+        "within_2x_count": 23,
+        "within_2x": 0.3484848484848485
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 10,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0240515447587697,
+        "median_miss_multiple": 2.7844532784622684,
+        "mean_abs_log_error": 1.3823501916969885,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 5,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.1377638948654476,
+        "median_miss_multiple": 3.119784393747488,
+        "mean_abs_log_error": 1.3980864484293833,
+        "within_2x_count": 25,
+        "within_2x": 0.3787878787878788
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 5,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.100706350706312,
+        "median_miss_multiple": 3.0062887683520723,
+        "mean_abs_log_error": 1.4016106594993958,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 5,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.1200468479448502,
+        "median_miss_multiple": 3.064997788777008,
+        "mean_abs_log_error": 1.4035656326456134,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 2,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0131034759174669,
+        "median_miss_multiple": 2.754135157549147,
+        "mean_abs_log_error": 1.4135300119584038,
+        "within_2x_count": 23,
+        "within_2x": 0.3484848484848485
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 2,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.095924342709417,
+        "median_miss_multiple": 2.991946990000382,
+        "mean_abs_log_error": 1.4354656966612958,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 2,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.1320190811503115,
+        "median_miss_multiple": 3.1019131960748307,
+        "mean_abs_log_error": 1.4380198451697221,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 2,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.1593504110103663,
+        "median_miss_multiple": 3.1878618034581097,
+        "mean_abs_log_error": 1.4410444712542692,
+        "within_2x_count": 23,
+        "within_2x": 0.3484848484848485
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 1,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0046871582326995,
+        "median_miss_multiple": 2.7310527517984986,
+        "mean_abs_log_error": 1.453277275653607,
+        "within_2x_count": 21,
+        "within_2x": 0.3181818181818182
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 1,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0538594800864178,
+        "median_miss_multiple": 2.868701476249148,
+        "mean_abs_log_error": 1.4699379550486675,
+        "within_2x_count": 24,
+        "within_2x": 0.36363636363636365
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 1,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.1238594355650675,
+        "median_miss_multiple": 3.076705665874165,
+        "mean_abs_log_error": 1.4722564454755986,
+        "within_2x_count": 21,
+        "within_2x": 0.3181818181818182
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 1,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.139295040678726,
+        "median_miss_multiple": 3.1245648974504667,
+        "mean_abs_log_error": 1.4762998954053113,
+        "within_2x_count": 20,
+        "within_2x": 0.30303030303030304
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 0,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": true
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0785519983149299,
+        "median_miss_multiple": 2.940418735691984,
+        "mean_abs_log_error": 1.5752840620657584,
+        "within_2x_count": 16,
+        "within_2x": 0.24242424242424243
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 0,
+        "winsor_lo": 0,
+        "winsor_hi": 1,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.0786055478929437,
+        "median_miss_multiple": 2.940576198090449,
+        "mean_abs_log_error": 1.5929460451146014,
+        "within_2x_count": 18,
+        "within_2x": 0.2727272727272727
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 0,
+        "winsor_lo": 0.05,
+        "winsor_hi": 0.95,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.1770607332528682,
+        "median_miss_multiple": 3.2448227729890036,
+        "mean_abs_log_error": 1.6041597455866419,
+        "within_2x_count": 17,
+        "within_2x": 0.25757575757575757
+      }
+    },
+    {
+      "model": {
+        "shrink_k": 0,
+        "winsor_lo": 0.1,
+        "winsor_hi": 0.9,
+        "growth_weight": 0,
+        "growth_floor": -50,
+        "growth_cap": 200,
+        "tenure_floor": 1,
+        "tenure_range": 0,
+        "tenure_days": 730,
+        "unknown_age_days": 365,
+        "breadth_per_chain": 0,
+        "breadth_max_chains": 10,
+        "oos_train_share": 0.7,
+        "oos_min_side": 10,
+        "k_folds": 5,
+        "min_comps": 5,
+        "robust": false
+      },
+      "cv": {
+        "n": 66,
+        "median_abs_log_error": 1.256905118610785,
+        "median_miss_multiple": 3.514527592366846,
+        "mean_abs_log_error": 1.6079297881387118,
+        "within_2x_count": 17,
+        "within_2x": 0.25757575757575757
+      }
+    }
+  ],
+  "selected": {
+    "shrink_k": 20,
+    "winsor_lo": 0.05,
+    "winsor_hi": 0.95,
+    "growth_weight": 0,
+    "growth_floor": -50,
+    "growth_cap": 200,
+    "tenure_floor": 1,
+    "tenure_range": 0,
+    "tenure_days": 730,
+    "unknown_age_days": 365,
+    "breadth_per_chain": 0,
+    "breadth_max_chains": 10,
+    "oos_train_share": 0.7,
+    "oos_min_side": 10,
+    "k_folds": 5,
+    "min_comps": 5,
+    "robust": true
+  },
+  "before": {
+    "full": {
+      "n": 29,
+      "median_abs_log_error": 1.1387429741115027,
+      "median_miss_multiple": 3.122840405694386,
+      "mean_abs_log_error": 1.7161016022031261,
+      "within_2x_count": 8,
+      "within_2x": 0.27586206896551724
+    },
+    "baseline": {
+      "n": 29,
+      "median_abs_log_error": 1.666729620398127,
+      "median_miss_multiple": 5.294823368866594,
+      "mean_abs_log_error": 1.9896665897091455,
+      "within_2x_count": 6,
+      "within_2x": 0.20689655172413793
+    },
+    "rows": [
+      {
+        "slug": "concrete",
+        "actual": 20992334,
+        "prediction": 59499428,
+        "baseline": 207034588
+      },
+      {
+        "slug": "infrared-finance",
+        "actual": 391774,
+        "prediction": 2324562,
+        "baseline": 2151297
+      },
+      {
+        "slug": "looped-hype",
+        "actual": 5042491,
+        "prediction": 1614713,
+        "baseline": 951300
+      },
+      {
+        "slug": "resupply",
+        "actual": 1434821,
+        "prediction": 6352172,
+        "baseline": 8104298
+      },
+      {
+        "slug": "anvil",
+        "actual": 159606035,
+        "prediction": 4040913,
+        "baseline": 2474876
+      },
+      {
+        "slug": "uranium.io",
+        "actual": 9051242,
+        "prediction": 4089894,
+        "baseline": 1962271
+      },
+      {
+        "slug": "solomon-usdv",
+        "actual": 5711574,
+        "prediction": 3716598,
+        "baseline": 1645685
+      },
+      {
+        "slug": "zyfai",
+        "actual": 2660574,
+        "prediction": 3515990,
+        "baseline": 1561570
+      },
+      {
+        "slug": "usd-ai",
+        "actual": 63408224,
+        "prediction": 21291734,
+        "baseline": 29652353
+      },
+      {
+        "slug": "zerobase-cedefi",
+        "actual": 18611233,
+        "prediction": 11993823,
+        "baseline": 11319062
+      },
+      {
+        "slug": "cap",
+        "actual": 166714858,
+        "prediction": 14105025,
+        "baseline": 30126387
+      },
+      {
+        "slug": "mansory",
+        "actual": 5538701,
+        "prediction": 2777059,
+        "baseline": 1037614
+      },
+      {
+        "slug": "xsy",
+        "actual": 12974827,
+        "prediction": 4733642,
+        "baseline": 2450474
+      },
+      {
+        "slug": "yield-basis",
+        "actual": 14132031,
+        "prediction": 12295656,
+        "baseline": 15451865
+      },
+      {
+        "slug": "falcon-finance",
+        "actual": 318146200,
+        "prediction": 86721240,
+        "baseline": 293718976
+      },
+      {
+        "slug": "solstice",
+        "actual": 8870078,
+        "prediction": 24994536,
+        "baseline": 37903007
+      },
+      {
+        "slug": "bitkan",
+        "actual": 2351618,
+        "prediction": 14187842,
+        "baseline": 7153429
+      },
+      {
+        "slug": "rain",
+        "actual": 2646363290,
+        "prediction": 2664304,
+        "baseline": 1246849
+      },
+      {
+        "slug": "obol",
+        "actual": 717446,
+        "prediction": 61078566,
+        "baseline": 216155837
+      },
+      {
+        "slug": "re",
+        "actual": 39968695,
+        "prediction": 42342586,
+        "baseline": 91933857
+      },
+      {
+        "slug": "flying-tulip-lend",
+        "actual": 51699732,
+        "prediction": 2631569,
+        "baseline": 1900244
+      },
+      {
+        "slug": "chutes",
+        "actual": 83774453,
+        "prediction": 8031920,
+        "baseline": 7666500
+      },
+      {
+        "slug": "hyperlane",
+        "actual": 15570424,
+        "prediction": 13050211,
+        "baseline": 12440812
+      },
+      {
+        "slug": "bitway-earn",
+        "actual": 1208793873,
+        "prediction": 8402667,
+        "baseline": 6301576
+      },
+      {
+        "slug": "grove-finance",
+        "actual": 6477692,
+        "prediction": 59746611,
+        "baseline": 208452143
+      },
+      {
+        "slug": "zama",
+        "actual": 147586329,
+        "prediction": 18117278,
+        "baseline": 17022960
+      },
+      {
+        "slug": "huma",
+        "actual": 13257716,
+        "prediction": 35754835,
+        "baseline": 69597693
+      },
+      {
+        "slug": "wise-token",
+        "actual": 9205988,
+        "prediction": 6851229,
+        "baseline": 10266377
+      },
+      {
+        "slug": "fables",
+        "actual": 889485,
+        "prediction": 4819978,
+        "baseline": 2460707
+      }
+    ]
+  },
+  "after": {
+    "full": {
+      "n": 29,
+      "median_abs_log_error": 1.1159314151780877,
+      "median_miss_multiple": 3.0524099164845726,
+      "mean_abs_log_error": 1.6574202891201015,
+      "within_2x_count": 9,
+      "within_2x": 0.3103448275862069
+    },
+    "baseline": {
+      "n": 29,
+      "median_abs_log_error": 1.666729620398127,
+      "median_miss_multiple": 5.294823368866594,
+      "mean_abs_log_error": 1.9896665897091455,
+      "within_2x_count": 6,
+      "within_2x": 0.20689655172413793
+    },
+    "rows": [
+      {
+        "slug": "concrete",
+        "actual": 20992334,
+        "prediction": 58926080,
+        "baseline": 207034588
+      },
+      {
+        "slug": "infrared-finance",
+        "actual": 391774,
+        "prediction": 3699069,
+        "baseline": 2151297
+      },
+      {
+        "slug": "looped-hype",
+        "actual": 5042491,
+        "prediction": 2486785,
+        "baseline": 951300
+      },
+      {
+        "slug": "resupply",
+        "actual": 1434821,
+        "prediction": 8274660,
+        "baseline": 8104298
+      },
+      {
+        "slug": "anvil",
+        "actual": 159606035,
+        "prediction": 5084198,
+        "baseline": 2474876
+      },
+      {
+        "slug": "uranium.io",
+        "actual": 9051242,
+        "prediction": 4621340,
+        "baseline": 1962271
+      },
+      {
+        "slug": "solomon-usdv",
+        "actual": 5711574,
+        "prediction": 4196725,
+        "baseline": 1645685
+      },
+      {
+        "slug": "zyfai",
+        "actual": 2660574,
+        "prediction": 4051487,
+        "baseline": 1561570
+      },
+      {
+        "slug": "usd-ai",
+        "actual": 63408224,
+        "prediction": 20773168,
+        "baseline": 29652353
+      },
+      {
+        "slug": "zerobase-cedefi",
+        "actual": 18611233,
+        "prediction": 12202287,
+        "baseline": 11319062
+      },
+      {
+        "slug": "cap",
+        "actual": 166714858,
+        "prediction": 17114711,
+        "baseline": 30126387
+      },
+      {
+        "slug": "mansory",
+        "actual": 5538701,
+        "prediction": 3247906,
+        "baseline": 1037614
+      },
+      {
+        "slug": "xsy",
+        "actual": 12974827,
+        "prediction": 5231323,
+        "baseline": 2450474
+      },
+      {
+        "slug": "yield-basis",
+        "actual": 14132031,
+        "prediction": 14011551,
+        "baseline": 15451865
+      },
+      {
+        "slug": "falcon-finance",
+        "actual": 318146200,
+        "prediction": 73985757,
+        "baseline": 293718976
+      },
+      {
+        "slug": "solstice",
+        "actual": 8870078,
+        "prediction": 23820426,
+        "baseline": 37903007
+      },
+      {
+        "slug": "bitkan",
+        "actual": 2351618,
+        "prediction": 11963756,
+        "baseline": 7153429
+      },
+      {
+        "slug": "rain",
+        "actual": 2646363290,
+        "prediction": 3478768,
+        "baseline": 1246849
+      },
+      {
+        "slug": "obol",
+        "actual": 717446,
+        "prediction": 60349155,
+        "baseline": 216155837
+      },
+      {
+        "slug": "re",
+        "actual": 39968695,
+        "prediction": 38859608,
+        "baseline": 91933857
+      },
+      {
+        "slug": "flying-tulip-lend",
+        "actual": 51699732,
+        "prediction": 3707673,
+        "baseline": 1900244
+      },
+      {
+        "slug": "chutes",
+        "actual": 83774453,
+        "prediction": 9506307,
+        "baseline": 7666500
+      },
+      {
+        "slug": "hyperlane",
+        "actual": 15570424,
+        "prediction": 12920153,
+        "baseline": 12440812
+      },
+      {
+        "slug": "bitway-earn",
+        "actual": 1208793873,
+        "prediction": 8823765,
+        "baseline": 6301576
+      },
+      {
+        "slug": "grove-finance",
+        "actual": 6477692,
+        "prediction": 59149054,
+        "baseline": 208452143
+      },
+      {
+        "slug": "zama",
+        "actual": 147586329,
+        "prediction": 16149691,
+        "baseline": 17022960
+      },
+      {
+        "slug": "huma",
+        "actual": 13257716,
+        "prediction": 33311315,
+        "baseline": 69597693
+      },
+      {
+        "slug": "wise-token",
+        "actual": 9205988,
+        "prediction": 9277949,
+        "baseline": 10266377
+      },
+      {
+        "slug": "fables",
+        "actual": 889485,
+        "prediction": 5260355,
+        "baseline": 2460707
+      }
+    ]
+  }
+}
