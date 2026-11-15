@@ -14,22 +14,21 @@
 // fitted number is hardcoded: one function scores every row.
 //
 //   comps          = protocols with mcap_usd > 0 and tvl_usd > 0
-//   log-ratios     = ln(mcap_usd / tvl_usd), winsorized at the 5th/95th percentiles
-//   fit            = least squares of ln(mcap) on ln(tvl) over the winsorized comps:
+//   log-ratios     = ln(mcap_usd / tvl_usd), unclipped by default
+//   fit            = least squares of ln(mcap) on ln(tvl) over the comps:
 //                    ln(mcap) = intercept + slope x ln(tvl)
 //   category adj.  = each category's median residual, shrunk toward 0 with
 //                    k = 5 pseudo-counts, so a lone comp cannot swing its category
 //   core           = exp(intercept + slope x ln(tvl_usd) + category adjustment)
 //   implied        = max(1, round(core x growthFactor x tenureFactor x breadthFactor))
 //
-// The three adjustments are bounded secondary multipliers, kept at half the
-// strength of the first version because the out-of-sample check showed the
-// fitted core carries the signal: growthFactor = 1 + 0.20 x clamp(change_7d,
-// -50, 200) / 100, tenureFactor = 0.85 + 0.15 x min(age_days, 730) / 730,
-// breadthFactor = 1 + 0.025 x min(chains, 10). Age is the time from listed_at
-// to the snapshot's as_of date; an unlisted age uses 365 days.
+// Training-only grouped CV selected neutral secondary multipliers and an
+// unclipped log-linear core. Growth, age and chains remain descriptive inputs
+// and farm-plan context. Listing dates do not prove time without a token.
+// The historical development holdout is not an independent forward backtest.
+// See evaluation/report.md for selection, uncertainty and limitations.
 //
-// The fit is validated out of sample before it is trusted: the dated comps are
+// The fit has a development-holdout check: the dated comps are
 // split by listing date, the model is fitted on the earlier 70% and scored on
 // the later 30% (a deterministic slug-hash K-fold when the time split is
 // degenerate). The evidence — comp count, fitted slope and intercept, the
@@ -83,16 +82,16 @@ export interface ValueModel {
 
 export const VALUE_MODEL: ValueModel = {
   shrink_k: 5,
-  winsor_lo: 0.05,
-  winsor_hi: 0.95,
-  growth_weight: 0.2,
+  winsor_lo: 0,
+  winsor_hi: 1,
+  growth_weight: 0,
   growth_floor: -50,
   growth_cap: 200,
-  tenure_floor: 0.85,
-  tenure_range: 0.15,
+  tenure_floor: 1,
+  tenure_range: 0,
   tenure_days: 730,
   unknown_age_days: 365,
-  breadth_per_chain: 0.025,
+  breadth_per_chain: 0,
   breadth_max_chains: 10,
   oos_train_share: 0.7,
   oos_min_side: 10,
@@ -101,7 +100,7 @@ export const VALUE_MODEL: ValueModel = {
 };
 
 /** The model's version label, shown by the dashboard. */
-export const MODEL_VERSION = 'launch-2';
+export const MODEL_VERSION = 'launch-3';
 
 /** How many live-token protocols the Live view carries, by market capitalisation. */
 export const LIVE_ROWS = 24;
@@ -325,8 +324,8 @@ export function categoryAdjustment(fitted: FittedModel, category: string | null)
 
 /**
  * Fit the value model on a set of protocols: the comps among them carry the fit.
- * Least squares of ln(mcap) on ln(tvl) over winsorized log-ratios, then each
- * category's median residual shrunk toward zero. Pure and deterministic.
+  * Least squares over the winsorized log-ratio values, then shrunk category
+  * median residuals. Pure and deterministic.
  */
 export function fitModel(protocols: SnapshotProtocol[], model: ValueModel): FittedModel {
   const comps = protocols.filter(isComp);

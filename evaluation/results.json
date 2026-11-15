@@ -1,0 +1,672 @@
+{
+  "baseline_revision": "d88e92297affb609799799b2923b5e115f078b77",
+  "snapshot_sha256": "42a71213519479f3a180cc5010cbbf6bd18a2447fa0ad29e4c5122b6c9184393",
+  "as_of": "2026-11-14",
+  "disclosure": "Development holdout: historically inspected. Same-snapshot listing-date split is not a forward market backtest. Candidate selection in this run uses training-only grouped CV; holdout is scored only after selection.",
+  "split": {
+    "method": "unchanged chronological 70/30 of dated comps; date then slug",
+    "train_n": 66,
+    "test_n": 29,
+    "undated_excluded": 33,
+    "cutoff": "2025-01-29",
+    "train_slugs": [
+      "superfluid",
+      "cbridge",
+      "rocket-pool",
+      "gains-network",
+      "stader",
+      "gearbox",
+      "tectonic",
+      "across",
+      "railgun",
+      "astar-dapps-staking",
+      "api3",
+      "metalx-lending",
+      "portal",
+      "concentrator",
+      "symbiosis",
+      "pinksale",
+      "team-finance",
+      "aura",
+      "dolomite",
+      "okx",
+      "swissborg",
+      "gate",
+      "ston.fi",
+      "exactly",
+      "veno-finance",
+      "flokifi-locker",
+      "blur-bids",
+      "inverse-finance-firm",
+      "nexo",
+      "liqwid",
+      "streamflow",
+      "mexc",
+      "equilibria",
+      "eigencloud",
+      "stusdt",
+      "gravity-bridge",
+      "fx-protocol",
+      "hydration-dex",
+      "ekubo",
+      "sdai",
+      "hipo",
+      "frankencoin",
+      "meth-protocol",
+      "renzo",
+      "brickken",
+      "veranta",
+      "merlins-seal",
+      "b2-buzz",
+      "merlinswap",
+      "evaa-protocol",
+      "morpheusai",
+      "taiko-bridge",
+      "harmonix-finance",
+      "usual-usd0",
+      "kinetic",
+      "waterneuron",
+      "pumpbtc",
+      "aquarius-stellar",
+      "biconomy.com",
+      "treehouse-protocol",
+      "babylon-protocol",
+      "kyros",
+      "reservoir-protocol",
+      "bitkub",
+      "resolv-usr",
+      "kaio"
+    ],
+    "test_slugs": [
+      "concrete",
+      "infrared-finance",
+      "looped-hype",
+      "resupply",
+      "anvil",
+      "uranium.io",
+      "solomon-usdv",
+      "zyfai",
+      "usd-ai",
+      "zerobase-cedefi",
+      "cap",
+      "mansory",
+      "xsy",
+      "yield-basis",
+      "falcon-finance",
+      "solstice",
+      "bitkan",
+      "rain",
+      "obol",
+      "re",
+      "flying-tulip-lend",
+      "chutes",
+      "hyperlane",
+      "bitway-earn",
+      "grove-finance",
+      "zama",
+      "huma",
+      "wise-token",
+      "fables"
+    ]
+  },
+  "selection": {
+    "rule": "lowest pooled inner-CV median absolute log error, at least 5% below original and mean absolute log error no worse; otherwise retain original",
+    "selected": "unwinsorized-core",
+    "parameters": {
+      "shrink_k": 5,
+      "winsor_lo": 0,
+      "winsor_hi": 1,
+      "growth_weight": 0,
+      "growth_floor": -50,
+      "growth_cap": 200,
+      "tenure_floor": 1,
+      "tenure_range": 0,
+      "tenure_days": 730,
+      "unknown_age_days": 365,
+      "breadth_per_chain": 0,
+      "breadth_max_chains": 10,
+      "oos_train_share": 0.7,
+      "oos_min_side": 10,
+      "k_folds": 5,
+      "min_comps": 5
+    },
+    "robust": false,
+    "cv": [
+      {
+        "id": "original",
+        "n": 66,
+        "median_abs_log_error": 1.057346994584898,
+        "mean_abs_log_error": 1.382183955712823,
+        "within_2x": 0.3333333333333333,
+        "median_error_factor": 2.878723580197758,
+        "folds": [
+          {
+            "n": 12,
+            "median_abs_log_error": 1.0568970345019935,
+            "mean_abs_log_error": 1.154062429828844,
+            "within_2x": 0.4166666666666667,
+            "median_error_factor": 2.8774285608723043
+          },
+          {
+            "n": 13,
+            "median_abs_log_error": 1.1123542431754583,
+            "mean_abs_log_error": 1.621473205098018,
+            "within_2x": 0,
+            "median_error_factor": 3.041510427486849
+          },
+          {
+            "n": 14,
+            "median_abs_log_error": 1.0328254032438364,
+            "mean_abs_log_error": 1.4680733624300637,
+            "within_2x": 0.35714285714285715,
+            "median_error_factor": 2.8089911660508298
+          },
+          {
+            "n": 15,
+            "median_abs_log_error": 0.5766598915577141,
+            "mean_abs_log_error": 1.0507920596529112,
+            "within_2x": 0.6,
+            "median_error_factor": 1.780082820438311
+          },
+          {
+            "n": 12,
+            "median_abs_log_error": 1.2813467497913704,
+            "mean_abs_log_error": 1.6651110236676159,
+            "within_2x": 0.25,
+            "median_error_factor": 3.601486762509717
+          }
+        ]
+      },
+      {
+        "id": "core-only",
+        "n": 66,
+        "median_abs_log_error": 1.0299796644482386,
+        "mean_abs_log_error": 1.3745975337447924,
+        "within_2x": 0.3787878787878788,
+        "median_error_factor": 2.801008874058976,
+        "folds": [
+          {
+            "n": 12,
+            "median_abs_log_error": 1.140202068694478,
+            "mean_abs_log_error": 1.1754192573162532,
+            "within_2x": 0.4166666666666667,
+            "median_error_factor": 3.1274002510276677
+          },
+          {
+            "n": 13,
+            "median_abs_log_error": 1.3142151861286333,
+            "mean_abs_log_error": 1.5980084427815069,
+            "within_2x": 0.15384615384615385,
+            "median_error_factor": 3.7218288958087524
+          },
+          {
+            "n": 14,
+            "median_abs_log_error": 1.0348206552906678,
+            "mean_abs_log_error": 1.4508268994688707,
+            "within_2x": 0.42857142857142855,
+            "median_error_factor": 2.8146014064850675
+          },
+          {
+            "n": 15,
+            "median_abs_log_error": 0.5906084072951856,
+            "mean_abs_log_error": 1.051602661761644,
+            "within_2x": 0.6,
+            "median_error_factor": 1.8050863090596057
+          },
+          {
+            "n": 12,
+            "median_abs_log_error": 1.3767876003237536,
+            "mean_abs_log_error": 1.6465566553510689,
+            "within_2x": 0.25,
+            "median_error_factor": 3.9621531423713905
+          }
+        ]
+      },
+      {
+        "id": "core-shrink-10",
+        "n": 66,
+        "median_abs_log_error": 1.0586749848818533,
+        "mean_abs_log_error": 1.3733783361342475,
+        "within_2x": 0.3181818181818182,
+        "median_error_factor": 2.882549036702236,
+        "folds": [
+          {
+            "n": 12,
+            "median_abs_log_error": 1.009781111166956,
+            "mean_abs_log_error": 1.1967556004545445,
+            "within_2x": 0.3333333333333333,
+            "median_error_factor": 2.745000099383995
+          },
+          {
+            "n": 13,
+            "median_abs_log_error": 1.2050267241537824,
+            "mean_abs_log_error": 1.5988045666716557,
+            "within_2x": 0.15384615384615385,
+            "median_error_factor": 3.336848251321687
+          },
+          {
+            "n": 14,
+            "median_abs_log_error": 1.0433044060165457,
+            "mean_abs_log_error": 1.4825135874944346,
+            "within_2x": 0.2857142857142857,
+            "median_error_factor": 2.8385813593540306
+          },
+          {
+            "n": 15,
+            "median_abs_log_error": 0.4397840679066274,
+            "mean_abs_log_error": 0.9896097892235548,
+            "within_2x": 0.6,
+            "median_error_factor": 1.5523719753874254
+          },
+          {
+            "n": 12,
+            "median_abs_log_error": 1.4910927842658204,
+            "mean_abs_log_error": 1.6581755457832406,
+            "within_2x": 0.16666666666666666,
+            "median_error_factor": 4.4419469574778
+          }
+        ]
+      },
+      {
+        "id": "unwinsorized-core",
+        "n": 66,
+        "median_abs_log_error": 0.9858422487531966,
+        "mean_abs_log_error": 1.3675516966063574,
+        "within_2x": 0.36363636363636365,
+        "median_error_factor": 2.680068218205773,
+        "folds": [
+          {
+            "n": 12,
+            "median_abs_log_error": 1.1898318838271669,
+            "mean_abs_log_error": 1.178489767806089,
+            "within_2x": 0.3333333333333333,
+            "median_error_factor": 3.2865286423196047
+          },
+          {
+            "n": 13,
+            "median_abs_log_error": 1.2966099270334226,
+            "mean_abs_log_error": 1.5785385611364016,
+            "within_2x": 0.15384615384615385,
+            "median_error_factor": 3.6568785452435115
+          },
+          {
+            "n": 14,
+            "median_abs_log_error": 0.9267152552660267,
+            "mean_abs_log_error": 1.431654397743234,
+            "within_2x": 0.5,
+            "median_error_factor": 2.5261976200890404
+          },
+          {
+            "n": 15,
+            "median_abs_log_error": 0.5656429055953112,
+            "mean_abs_log_error": 1.0446284011872666,
+            "within_2x": 0.6,
+            "median_error_factor": 1.7605793052380891
+          },
+          {
+            "n": 12,
+            "median_abs_log_error": 1.4586661455278618,
+            "mean_abs_log_error": 1.6569121567799208,
+            "within_2x": 0.16666666666666666,
+            "median_error_factor": 4.300219833781098
+          }
+        ]
+      },
+      {
+        "id": "huber-core",
+        "n": 66,
+        "median_abs_log_error": 1.0717912659963522,
+        "mean_abs_log_error": 1.3656022446744895,
+        "within_2x": 0.3484848484848485,
+        "median_error_factor": 2.920606400128421,
+        "folds": [
+          {
+            "n": 12,
+            "median_abs_log_error": 1.1941264761977823,
+            "mean_abs_log_error": 1.149481700097309,
+            "within_2x": 0.4166666666666667,
+            "median_error_factor": 3.3006732941699184
+          },
+          {
+            "n": 13,
+            "median_abs_log_error": 1.1732399333415007,
+            "mean_abs_log_error": 1.6256830283768504,
+            "within_2x": 0,
+            "median_error_factor": 3.2324486090814393
+          },
+          {
+            "n": 14,
+            "median_abs_log_error": 0.9568111951776084,
+            "mean_abs_log_error": 1.447813151703283,
+            "within_2x": 0.5,
+            "median_error_factor": 2.60338154749783
+          },
+          {
+            "n": 15,
+            "median_abs_log_error": 0.4904837197153036,
+            "mean_abs_log_error": 1.0047396549570762,
+            "within_2x": 0.6,
+            "median_error_factor": 1.6331059944919386
+          },
+          {
+            "n": 12,
+            "median_abs_log_error": 1.406320206746722,
+            "mean_abs_log_error": 1.655134119187285,
+            "within_2x": 0.16666666666666666,
+            "median_error_factor": 4.080910832442526
+          }
+        ]
+      },
+      {
+        "id": "huber-core-shrink-10",
+        "n": 66,
+        "median_abs_log_error": 1.000221649465626,
+        "mean_abs_log_error": 1.3598662193492237,
+        "within_2x": 0.3484848484848485,
+        "median_error_factor": 2.7188844009512128,
+        "folds": [
+          {
+            "n": 12,
+            "median_abs_log_error": 1.1437449846427459,
+            "mean_abs_log_error": 1.1505956455343358,
+            "within_2x": 0.4166666666666667,
+            "median_error_factor": 3.1385000184145104
+          },
+          {
+            "n": 13,
+            "median_abs_log_error": 1.2638917954792426,
+            "mean_abs_log_error": 1.6311686364719098,
+            "within_2x": 0.07692307692307693,
+            "median_error_factor": 3.539168439584562
+          },
+          {
+            "n": 14,
+            "median_abs_log_error": 1.0265160833030267,
+            "mean_abs_log_error": 1.473742625395161,
+            "within_2x": 0.42857142857142855,
+            "median_error_factor": 2.7913241341583
+          },
+          {
+            "n": 15,
+            "median_abs_log_error": 0.3608515361843754,
+            "mean_abs_log_error": 0.9396512529549813,
+            "within_2x": 0.6,
+            "median_error_factor": 1.4345504662320252
+          },
+          {
+            "n": 12,
+            "median_abs_log_error": 1.467828541903713,
+            "mean_abs_log_error": 1.6676387422204098,
+            "within_2x": 0.16666666666666666,
+            "median_error_factor": 4.339801205607717
+          }
+        ]
+      }
+    ]
+  },
+  "before": {
+    "n": 29,
+    "median_abs_log_error": 1.1681917628532918,
+    "mean_abs_log_error": 1.7372581643090554,
+    "within_2x": 0.2413793103448276,
+    "median_error_factor": 3.216171776088987
+  },
+  "after": {
+    "n": 29,
+    "median_abs_log_error": 1.114480306795116,
+    "mean_abs_log_error": 1.6937700726611682,
+    "within_2x": 0.27586206896551724,
+    "median_error_factor": 3.047983751066054
+  },
+  "unseen_family_diagnostic": {
+    "n": 29,
+    "before": {
+      "n": 29,
+      "median_abs_log_error": 1.1681917628532918,
+      "mean_abs_log_error": 1.7372581643090554,
+      "within_2x": 0.2413793103448276,
+      "median_error_factor": 3.216171776088987
+    },
+    "after": {
+      "n": 29,
+      "median_abs_log_error": 1.114480306795116,
+      "mean_abs_log_error": 1.6937700726611682,
+      "within_2x": 0.27586206896551724,
+      "median_error_factor": 3.047983751066054
+    }
+  },
+  "predictions": [
+    {
+      "slug": "concrete",
+      "family": "gecko:concrete",
+      "actual": 20992334,
+      "before": 64554760,
+      "after": 54544225,
+      "seen_family": false
+    },
+    {
+      "slug": "infrared-finance",
+      "family": "gecko:infrared-finance",
+      "actual": 391774,
+      "before": 2294010,
+      "after": 2467127,
+      "seen_family": false
+    },
+    {
+      "slug": "looped-hype",
+      "family": "gecko:looped-hype",
+      "actual": 5042491,
+      "before": 1567855,
+      "after": 1727207,
+      "seen_family": false
+    },
+    {
+      "slug": "resupply",
+      "family": "gecko:resupply",
+      "actual": 1434821,
+      "before": 6197330,
+      "after": 6464468,
+      "seen_family": false
+    },
+    {
+      "slug": "anvil",
+      "family": "gecko:anvil",
+      "actual": 159606035,
+      "before": 3953776,
+      "after": 4382664,
+      "seen_family": false
+    },
+    {
+      "slug": "uranium.io",
+      "family": "gecko:uranium",
+      "actual": 9051242,
+      "before": 4056770,
+      "after": 4430245,
+      "seen_family": false
+    },
+    {
+      "slug": "solomon-usdv",
+      "family": "gecko:solomon",
+      "actual": 5711574,
+      "before": 3688584,
+      "after": 4019254,
+      "seen_family": false
+    },
+    {
+      "slug": "zyfai",
+      "family": "gecko:zyfi",
+      "actual": 2660574,
+      "before": 3775349,
+      "after": 3815188,
+      "seen_family": false
+    },
+    {
+      "slug": "usd-ai",
+      "family": "gecko:chip-2",
+      "actual": 63408224,
+      "before": 20966892,
+      "after": 20803334,
+      "seen_family": false
+    },
+    {
+      "slug": "zerobase-cedefi",
+      "family": "gecko:zerobase",
+      "actual": 18611233,
+      "before": 13489580,
+      "after": 12054460,
+      "seen_family": false
+    },
+    {
+      "slug": "cap",
+      "family": "gecko:cap-4",
+      "actual": 166714858,
+      "before": 13318565,
+      "after": 13656050,
+      "seen_family": false
+    },
+    {
+      "slug": "mansory",
+      "family": "gecko:mansory-token",
+      "actual": 5538701,
+      "before": 2704432,
+      "after": 3081852,
+      "seen_family": false
+    },
+    {
+      "slug": "xsy",
+      "family": "gecko:unity-2",
+      "actual": 12974827,
+      "before": 4658572,
+      "after": 5042290,
+      "seen_family": false
+    },
+    {
+      "slug": "yield-basis",
+      "family": "gecko:yield-basis",
+      "actual": 14132031,
+      "before": 11494239,
+      "after": 12439340,
+      "seen_family": false
+    },
+    {
+      "slug": "falcon-finance",
+      "family": "gecko:falcon-finance-ff",
+      "actual": 318146200,
+      "before": 82031271,
+      "after": 77019806,
+      "seen_family": false
+    },
+    {
+      "slug": "solstice",
+      "family": "gecko:solstice",
+      "actual": 8870078,
+      "before": 23933663,
+      "after": 23993803,
+      "seen_family": false
+    },
+    {
+      "slug": "bitkan",
+      "family": "gecko:kan",
+      "actual": 2351618,
+      "before": 16025428,
+      "after": 15406341,
+      "seen_family": false
+    },
+    {
+      "slug": "rain",
+      "family": "gecko:rain",
+      "actual": 2646363290,
+      "before": 2349777,
+      "after": 2965867,
+      "seen_family": false
+    },
+    {
+      "slug": "obol",
+      "family": "gecko:obol-2",
+      "actual": 717446,
+      "before": 57160550,
+      "after": 55900233,
+      "seen_family": false
+    },
+    {
+      "slug": "re",
+      "family": "gecko:re",
+      "actual": 39968695,
+      "before": 42769539,
+      "after": 39630871,
+      "seen_family": false
+    },
+    {
+      "slug": "flying-tulip-lend",
+      "family": "gecko:flying-tulip",
+      "actual": 51699732,
+      "before": 2524126,
+      "after": 2829771,
+      "seen_family": false
+    },
+    {
+      "slug": "chutes",
+      "family": "gecko:chutes",
+      "actual": 83774453,
+      "before": 7324132,
+      "after": 8345005,
+      "seen_family": false
+    },
+    {
+      "slug": "hyperlane",
+      "family": "gecko:hyperlane",
+      "actual": 15570424,
+      "before": 14509544,
+      "after": 12975145,
+      "seen_family": false
+    },
+    {
+      "slug": "bitway-earn",
+      "family": "gecko:bitway",
+      "actual": 1208793873,
+      "before": 7751657,
+      "after": 8635128,
+      "seen_family": false
+    },
+    {
+      "slug": "grove-finance",
+      "family": "gecko:grove-2",
+      "actual": 6477692,
+      "before": 60279067,
+      "after": 54756629,
+      "seen_family": false
+    },
+    {
+      "slug": "zama",
+      "family": "gecko:zama",
+      "actual": 147586329,
+      "before": 15949343,
+      "after": 18257936,
+      "seen_family": false
+    },
+    {
+      "slug": "huma",
+      "family": "gecko:huma-finance",
+      "actual": 13257716,
+      "before": 34857809,
+      "after": 33820691,
+      "seen_family": false
+    },
+    {
+      "slug": "wise-token",
+      "family": "gecko:wise-token11",
+      "actual": 9205988,
+      "before": 5920078,
+      "after": 6695403,
+      "seen_family": false
+    },
+    {
+      "slug": "fables",
+      "family": "gecko:fables",
+      "actual": 889485,
+      "before": 3937333,
+      "after": 5121010,
+      "seen_family": false
+    }
+  ]
+}

@@ -7,7 +7,7 @@
 // equation, and the out-of-sample error.
 //
 // The value model is fitted at run time from the snapshot's own launched-token
-// protocols (comps): ln(mcap) = intercept + slope x ln(TVL), winsorized, with a
+// protocols (comps): ln(mcap) = intercept + slope x ln(TVL), unclipped, with a
 // shrunk per-category adjustment, then bounded growth, tenure and breadth
 // multipliers. Nothing is hardcoded: every fitted number below comes from
 // data.js, computed from the snapshot by main.ts.
@@ -181,7 +181,7 @@
     return h('footer', { class: 'footer' },
       h('p', null,
         h('b', { text: 'Method. ' }),
-        'Implied value is this entry\u2019s own model, never a price and never a promise. It is fitted, not guessed: the protocols that record a token are the calibration comps, and least squares over their market caps and TVLs sets the equation every row is scored with, plus a shrunk per-category adjustment and bounded growth, tenure and breadth multipliers. No protocol name is special-cased, and no fitted number is hardcoded. The Model & evidence view shows the fit and its out-of-sample error.'
+        'Implied value is this entry\u2019s own model, never a price and never a promise. It is fitted, not guessed: the protocols that record a token are the calibration comps, and least squares over their market caps and TVLs sets the equation every row is scored with, plus a shrunk per-category adjustment and neutral growth, tenure and breadth multipliers. No protocol name is special-cased, and no fitted number is hardcoded. The Model & evidence view shows the fit and its out-of-sample error.'
       ),
       h('p', null,
         h('b', { text: 'Honest language. ' }),
@@ -308,13 +308,13 @@
     var oos = ev.oos;
     return h('section', { class: 'panel model', 'aria-labelledby': 'model-title' },
       h('h2', { id: 'model-title', text: 'How implied value is computed: fitted on launched tokens' }),
-      h('p', { text: 'One fitted function scores every row, from the snapshot figures alone. The ' + ev.comp_count + ' protocols that record a token are the calibration comps: least squares over their market caps and TVLs sets the equation, a shrunk per-category adjustment corrects it, and bounded growth, tenure and breadth multipliers finish it. No protocol name is special-cased, no fitted number is hardcoded, and the fit is re-derived from whatever snapshot the program is handed.' }),
+      h('p', { text: 'One fitted function scores every row, from the snapshot figures alone. The ' + ev.comp_count + ' protocols that record a token are the calibration comps: least squares over their market caps and TVLs sets the equation, a shrunk per-category adjustment corrects it, and neutral growth, tenure and breadth multipliers finish it. No protocol name is special-cased, no fitted number is hardcoded, and the fit is re-derived from whatever snapshot the program is handed.' }),
       h('div', { class: 'formula', text: 'ln(implied core) = ' + ev.fit.intercept.toFixed(3) + ' + ' + ev.fit.slope.toFixed(3) + ' \u00d7 ln(tvl_usd) + category adjustment;  implied = round( exp(core) \u00d7 (1 + clamp(change_7d, ' + m.growth_floor + ', ' + m.growth_cap + ') / 100 \u00d7 ' + m.growth_weight + ') \u00d7 (' + m.tenure_floor + ' + min(age_days, ' + m.tenure_days + ') / ' + m.tenure_days + ' \u00d7 ' + m.tenure_range + ') \u00d7 (1 + min(chains, ' + m.breadth_max_chains + ') \u00d7 ' + m.breadth_per_chain + ') )' }),
       h('div', { class: 'constants' },
         h('div', { class: 'constant' }, h('span', { text: 'Calibration comps (mcap recorded)' }), h('b', { text: String(ev.comp_count) })),
         h('div', { class: 'constant' }, h('span', { text: 'Fitted slope: 10\u00d7 TVL \u2192 ' + Math.pow(10, ev.fit.slope).toFixed(1) + '\u00d7 value' }), h('b', { text: ev.fit.slope.toFixed(3) })),
         h('div', { class: 'constant' }, h('span', { text: 'Global median mcap / TVL' }), h('b', { text: fmtMult(ev.global_median_ratio) })),
-        h('div', { class: 'constant' }, h('span', { text: 'Out-of-sample median miss (' + oos.test_n + ' held out)' }), h('b', { text: fmtErrMultiple(oos.med_abs_log_err) })),
+        h('div', { class: 'constant' }, h('span', { text: 'Development-holdout median miss (' + oos.test_n + ' held out)' }), h('b', { text: fmtErrMultiple(oos.med_abs_log_err) })),
         h('div', { class: 'constant' }, h('span', { text: 'Held-out comps predicted within 2\u00d7' }), h('b', { text: oos.within_2x === null ? 'n/a' : (oos.within_2x * 100).toFixed(1) + '%' })),
         h('div', { class: 'constant' }, h('span', { text: 'Model version' }), h('b', { text: DATA.model_version }))
       ),
@@ -494,7 +494,7 @@
       h('div', { class: 'stats' },
         h('div', { class: 'stat hot' }, h('b', { text: String(ev.comp_count) }), h('span', { text: 'Calibration comps with a recorded market cap' })),
         h('div', { class: 'stat' }, h('b', { text: fit.slope.toFixed(3) }), h('span', { text: 'Fitted slope: 10\u00d7 TVL \u2192 ' + Math.pow(10, fit.slope).toFixed(1) + '\u00d7 value (sublinear)' })),
-        h('div', { class: 'stat' }, h('b', { text: fmtErrMultiple(oos.med_abs_log_err) }), h('span', { text: 'Out-of-sample median miss (' + oos.test_n + ' held-out comps)' })),
+        h('div', { class: 'stat' }, h('b', { text: fmtErrMultiple(oos.med_abs_log_err) }), h('span', { text: 'Development-holdout median miss (' + oos.test_n + ' held-out comps)' })),
         h('div', { class: 'stat' }, h('b', { text: oos.within_2x === null ? 'n/a' : (oos.within_2x * 100).toFixed(1) + '%' }), h('span', { text: 'Held-out comps predicted within 2\u00d7' }))
       ),
       h('section', { class: 'panel model', 'aria-labelledby': 'fit-title' },
@@ -502,13 +502,13 @@
         h('div', { class: 'formula', text: 'ln(implied core) = ' + fit.intercept.toFixed(3) + ' + ' + fit.slope.toFixed(3) + ' \u00d7 ln(tvl_usd) + category adjustment' }),
         h('div', { class: 'method' },
           h('h3', { text: 'How the fit is built, in four steps' }),
-          h('p', { text: '1. Comps: every protocol with a recorded market cap and TVL (' + ev.comp_count + ' here). 2. Winsorize: each comp\u2019s log market-cap-to-TVL ratio is clamped to the 5th\u201395th percentile band' + (ev.fallback ? ' (not fitted: too few comps)' : ' (' + fmtMult(Math.exp(ev.winsor.lo)) + ' to ' + fmtMult(Math.exp(ev.winsor.hi)) + ')') + ', so one 400\u00d7 outlier cannot drag the line. 3. Least squares of log market cap on log TVL over the winsorized comps sets the intercept and slope. 4. Each category\u2019s median residual is shrunk toward zero with ' + m.shrink_k + ' pseudo-counts, so a category with one comp barely moves from the global line.' }),
-          h('h3', { text: 'Then three bounded multipliers, kept deliberately weak' }),
-          h('p', { text: 'Growth: 1 + ' + m.growth_weight + ' \u00d7 clamped seven-day change. Tenure: ' + m.tenure_floor + ' + ' + m.tenure_range + ' over ' + m.tenure_days + ' days with no token on record (unknown age counts as ' + m.unknown_age_days + ' days). Breadth: +' + (m.breadth_per_chain * 100) + '% per chain, capped at ' + m.breadth_max_chains + '. The out-of-sample check below shows the fitted core carries the signal and these add little, so they stay small and secondary \u2014 they tilt the ranking, they never drive it.' })
+          h('p', { text: '1. Use positive-TVL and positive-market-cap comps. 2. Keep log ratios unclipped. 3. Fit ordinary least squares of log market cap on log TVL. 4. Shrink category median residuals toward zero using ' + m.shrink_k + ' pseudo-counts.' }),
+          h('h3', { text: 'No unsupported valuation premiums' }),
+          h('p', { text: 'Growth, listing age and chain breadth remain visible as context and inform farm plans, but their valuation multipliers are neutral. Grouped training-only cross-validation selected this simpler model. Listing age is not proven time without a token.' })
         )
       ),
       h('section', { class: 'panel model', 'aria-labelledby': 'oos-title' },
-        h('h2', { id: 'oos-title', text: 'Out-of-sample validation' }),
+        h('h2', { id: 'oos-title', text: 'Development-holdout evaluation' }),
         h('p', { text: splitText }),
         h('div', { class: 'table-scroll' },
           h('table', null,
@@ -522,7 +522,7 @@
             oosBody
           )
         ),
-        h('p', { text: 'Read it honestly: a median miss of ' + fmtErrMultiple(oos.med_abs_log_err) + ' means the typical held-out comp lands about that far from its recorded cap. The fitted core beats the one-ratio baseline, and the adjustments cost a little accuracy for the sake of weighing growth and tenure, as the brief asks. Comps disagree wildly \u2014 the middle half of market-cap-to-TVL ratios spans more than 20\u00d7 \u2014 so no fit on this snapshot can be precise. These are central estimates, not prices.' })
+        h('p', { text: 'This historically inspected development holdout is not a new independent test or a forward backtest: all TVLs and caps come from the same snapshot. Typical error remains about ' + fmtErrMultiple(oos.med_abs_log_err) + '. The observed improvement over v2 is small and its bootstrap interval crosses zero; statistical improvement is not established. Market cap is not FDV, protocol equity or a promised launch price.' })
       ),
       h('section', { class: 'panel model', 'aria-labelledby': 'cat-title' },
         h('h2', { id: 'cat-title', text: 'Per-category adjustments' }),

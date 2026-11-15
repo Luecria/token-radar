@@ -1,0 +1,26 @@
+{
+  "checks": "snapshot hash, exact selected parameters, all saved holdout predictions, both prediction interfaces, full board gate, dashboard OOS evidence, neutral factors, sparse fallback, constant TVL, unseen category",
+  "board_rows": 178,
+  "oos": {
+    "method": "time-split",
+    "train_n": 66,
+    "test_n": 29,
+    "split_date": "2025-01-29",
+    "med_abs_log_err": 1.1145,
+    "within_2x": 0.2759,
+    "core_med_abs_log_err": 1.1145,
+    "core_within_2x": 0.2759,
+    "baseline_med_abs_log_err": 1.6667,
+    "baseline_within_2x": 0.2069,
+    "reason": null
+  },
+  "paired_bootstrap": {
+    "resamples": 5000,
+    "seed": 123456789,
+    "median_log_error_difference_after_minus_before_95pct": [
+      -0.16850201536267662,
+      0.26284809466821635
+    ],
+    "caution": "Row bootstrap assumes independent observations; exploratory uncertainty on a historically inspected development holdout, not confirmatory inference."
+  }
+}
